@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>PP Data Entry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+      margin: 0;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      height: 30px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--tg-theme-hint-color, #999999);
+      border-radius: 8px;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>PP Data Entry</h2>
+    <img src="https://www.airtel.in/content/dam/airtel/images/airtel-red.svg" class="logo" alt="Airtel Logo">
+  </div>
+  
+  <form id="ppForm">
+    <div class="form-group">
+      <label for="date">Date</label>
+      <input type="date" id="date" name="date" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="msisdn">MSISDN</label>
+      <input type="text" id="msisdn" name="msisdn" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="customername">Customer Name</label>
+      <input type="text" id="customername" name="customername" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="connectiontype">Connection Type</label>
+      <select id="connectiontype" name="connectiontype" required>
+        <option value="">Select</option>
+        <option value="NC">NC</option>
+        <option value="P2P">P2P</option>
+        <option value="MNP">MNP</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" name="status" required>
+        <option value="">Select</option>
+        <option value="Active">Active</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="afname">AF Name</label>
+      <select id="afname" name="afname" required>
+        <option value="">Select</option>
+        <option value="Shivam Sharma">Shivam Sharma</option>
+        <option value="Bhawana Bhatt">Bhawana Bhatt</option>
+        <option value="Mayank Gupta">Mayank Gupta</option>
+        <option value="Monika Sharma">Monika Sharma</option>
+        <option value="Sangeeta">Sangeeta</option>
+        <option value="Asif Khan">Asif Khan</option>
+        <option value="Nitin">Nitin</option>
+        <option value="Diivya Kashyap">Diivya Kashyap</option>
+        <option value="Gaurav Rajput">Gaurav Rajput</option>
+        <option value="Pankaj Saxena">Pankaj Saxena</option>
+        <option value="Rakesh Kumar">Rakesh Kumar</option>
+        <option value="XFE">XFE</option>
+        <option value="Manish BB Champ">Manish BB Champ</option>
+      </select>
+    </div>
+    
+    <button type="submit">Submit PP Data</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
+    
+    document.getElementById('date').valueAsDate = new Date();
+    
+    document.getElementById('ppForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        formType: 'pp',
+        date: document.getElementById('date').value,
+        msisdn: document.getElementById('msisdn').value,
+        customername: document.getElementById('customername').value,
+        connectiontype: document.getElementById('connectiontype').value,
+        status: document.getElementById('status').value,
+        afname: document.getElementById('afname').value
+      };
+      
+      tg.showAlert("Submitting data...");
+      
+      fetch('<?= ScriptApp.getService().getUrl() ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          tg.showAlert("✅ Data saved successfully!");
+          tg.close();
+        } else {
+          tg.showAlert("❌ Error: " + data.message);
+        }
+      })
+      .catch(error => {
+       
